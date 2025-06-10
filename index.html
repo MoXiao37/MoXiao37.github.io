@@ -155,64 +155,36 @@
     <article id="post-hello-world" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2025/06/10/hello-world/">Hello World</a>
+    </h1>
+  
+
+        
+        <a href="/2025/06/10/hello-world/" class="archive-article-date">
+  	<time datetime="2025-06-10T07:28:34.407Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2025-06-10</time>
+</a>
+        
+      </header>
+    
     <div class="article-entry" itemprop="articleBody">
       
-        <h1 id="高并发抽奖逻辑redis-mysql"><a href="#高并发抽奖逻辑redis-mysql" class="headerlink" title="高并发抽奖逻辑redis+mysql"></a>高并发抽奖逻辑redis+mysql</h1><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>简单讲一个抽奖系统的实现，简单描述下需求，目前需要进行一场大型抽奖活动，但是为了成本控制，需要设置同一个奖项多个奖品按照循序先后出奖，必须排序前面的奖品出奖完成再进行下一轮<br>举例：</p>
-<table>
-<thead>
-<tr>
-<th>奖品</th>
-<th>级别</th>
-<th>顺序</th>
-<th>库存</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>耳机</td>
-<td>特等奖</td>
-<td>0</td>
-<td>3</td>
-</tr>
-<tr>
-<td>手环</td>
-<td>特等奖</td>
-<td>1</td>
-<td>2</td>
-</tr>
-<tr>
-<td>手机</td>
-<td>特等奖</td>
-<td>2</td>
-<td>1</td>
-</tr>
-<tr>
-<td>钥匙扣</td>
-<td>一等奖</td>
-<td>0</td>
-<td>200</td>
-</tr>
-<tr>
-<td>保温杯</td>
-<td>一等奖</td>
-<td>1</td>
-<td>300</td>
-</tr>
-</tbody></table>
-<p>诸如此表，最终出奖顺序必须先把顺序小的先消耗完，再出下一个奖项，中奖率百分百，按库存进行中奖概率划分。</p>
-<h2 id="难点"><a href="#难点" class="headerlink" title="难点"></a>难点</h2><p>enen… 没有太大的难点，需要注意的点就是：</p>
-<ol>
-<li>高并发时间，库存可能会存在超发问题</li>
-<li>逻辑控制出奖顺序按照规定顺序出奖</li>
-</ol>
-<p>超发问题，主要出现在当多个请求同时进入抽奖时，如何解决谁是最后一个中奖者，确保不超发，同时兼容速度。</p>
-<h2 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h2><p>1.数据库行级锁：注意只有InnoDB引擎才支持行级锁，是针对索引加的锁，不会影响到其他记录的查询<br>2.redis分布式锁：性能高效，实现方便<br>还有其他的锁，本质只要保证库存消耗时能够唯一即可</p>
-<p>流程如下：<br><img src="https://i-blog.csdnimg.cn/direct/b265f9b5460c48c5b291454237b83f15.jpeg" alt="在这里插入图片描述"></p>
-<p>以上是一个参考流程，<br>采用redis list 先行创建奖池，因为redis 是单线程，所以单个取出是线程安全的，我们重建奖池时，将活动有库存的奖品按照等级*库存，随机打乱形成一个list push进奖池，然后在抽奖时将奖品pop出来，抽奖时，只需要按顺序pop出来就行，再锁定相应类别的的奖项进行库存扣除，这样就保证了按顺序进行库存扣除，同时保证一定的并发性。</p>
-<p>注意点：</p>
-<ol>
-<li>容灾机制，当缓存被清除或者系统故障重启时，需要自动创建缓存奖池</li>
-<li>并发锁：需要注意高并发情况下，避免重复扣除缓存和重建奖池</li>
-</ol>
+        <p>Welcome to <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a target="_blank" rel="noopener" href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a target="_blank" rel="noopener" href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a target="_blank" rel="noopener" href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
+<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/writing.html">Writing</a></p>
+<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
+
+<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/server.html">Server</a></p>
+<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
+
+<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/generating.html">Generating</a></p>
+<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
+
+<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
 
       
 
